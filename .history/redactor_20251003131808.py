@@ -1,5 +1,4 @@
 #!/home/yal/Desktop/.venv/bin/python
-# Author: Raoul Comninos
 # pip install pillow send2trash PyMuPDF pytesseract
 import os
 import sys
