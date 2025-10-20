@@ -1,4 +1,4 @@
-#!/home/yal/Desktop/.venv/bin/python
+#!/home/yal/my-github-repos/redactor/.venv/bin/python
 # Author: Raoul Comninos
 # pip install pillow send2trash PyMuPDF pytesseract
 import os
