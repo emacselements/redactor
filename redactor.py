@@ -31,10 +31,22 @@ class SignatureManagerDialog:
         self.dialog.geometry("600x400")
         self.dialog.resizable(True, True)
         self.dialog.transient(parent)
-        self.dialog.grab_set()
         
         # Center the dialog
         self.dialog.geometry("+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50))
+        
+        # Force window to be visible before grabbing focus
+        self.dialog.update_idletasks()
+        self.dialog.deiconify()
+        self.dialog.lift()
+        self.dialog.focus_force()
+        
+        # Now safely set grab after window is properly visible
+        try:
+            self.dialog.grab_set()
+        except tk.TclError as e:
+            # If grab fails, just continue without it - the dialog will still work
+            print(f"Warning: Could not set dialog grab: {e}")
         
         self.create_widgets()
         self.update_signature_list()
@@ -128,10 +140,22 @@ class SignatureManagerDialog:
         dialog.geometry("300x120")
         dialog.resizable(False, False)
         dialog.transient(self.dialog)
-        dialog.grab_set()
         
         # Center on parent dialog
         dialog.geometry("+%d+%d" % (self.dialog.winfo_rootx() + 150, self.dialog.winfo_rooty() + 100))
+        
+        # Force window to be visible before grabbing focus
+        dialog.update_idletasks()
+        dialog.deiconify()
+        dialog.lift()
+        dialog.focus_force()
+        
+        # Now safely set grab after window is properly visible
+        try:
+            dialog.grab_set()
+        except tk.TclError as e:
+            # If grab fails, just continue without it - the dialog will still work
+            print(f"Warning: Could not set dialog grab: {e}")
         
         result = [None]  # Use list to store result
         
@@ -2092,10 +2116,22 @@ class Redactor:
         dialog.geometry("400x200")
         dialog.resizable(False, False)
         dialog.transient(self.root)
-        dialog.grab_set()
         
         # Center the dialog
         dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 100, self.root.winfo_rooty() + 100))
+        
+        # Force window to be visible before grabbing focus
+        dialog.update_idletasks()
+        dialog.deiconify()
+        dialog.lift()
+        dialog.focus_force()
+        
+        # Now safely set grab after window is properly visible
+        try:
+            dialog.grab_set()
+        except tk.TclError as e:
+            # If grab fails, just continue without it - the dialog will still work
+            print(f"Warning: Could not set dialog grab: {e}")
         
         result = [None]  # Use list to store result
         
@@ -2161,10 +2197,22 @@ class Redactor:
         dialog.geometry("600x400")
         dialog.resizable(True, True)
         dialog.transient(self.root)
-        dialog.grab_set()
         
         # Center the dialog
         dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 50))
+        
+        # Force window to be visible before grabbing focus
+        dialog.update_idletasks()
+        dialog.deiconify()
+        dialog.lift()
+        dialog.focus_force()
+        
+        # Now safely set grab after window is properly visible
+        try:
+            dialog.grab_set()
+        except tk.TclError as e:
+            # If grab fails, just continue without it - the dialog will still work
+            print(f"Warning: Could not set dialog grab: {e}")
         
         # Main frame
         main_frame = tk.Frame(dialog, padx=15, pady=15)
