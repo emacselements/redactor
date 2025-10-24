@@ -241,13 +241,15 @@ class Redactor:
         self.root = root
         self.root.title("Document Redactor - Multi-File")
         
-        # Set window size: 810 + 192px + 96px (2 inches @ 96 DPI) width, full height, centered horizontally
+        # Set window size: reasonable default size, centered on screen
         window_width = 1098
+        window_height = 800  # Use a reasonable height instead of full screen
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
-        window_height = screen_height
+        
+        # Center the window both horizontally and vertically
         x = (screen_width - window_width) // 2
-        y = 0
+        y = (screen_height - window_height) // 2
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
         
         # Application state
