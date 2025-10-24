@@ -241,15 +241,19 @@ class Redactor:
         self.root = root
         self.root.title("Document Redactor - Multi-File")
         
-        # Set window size: reasonable default size, centered on screen
-        window_width = 1098
-        window_height = 800  # Use a reasonable height instead of full screen
+        # Set window size: character-based dimensions (92 chars wide, 56 lines tall), centered horizontally
+        # Using approximate pixel conversions: ~9px per char width, ~18px per line height
+        char_width = 92
+        char_height = 56
+        window_width = char_width * 9  # Approximate pixels per character
+        window_height = char_height * 18  # Approximate pixels per line
+        
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
         
-        # Center the window both horizontally and vertically
+        # Center the window horizontally, position at top
         x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
+        y = 1
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
         
         # Application state
@@ -423,41 +427,32 @@ class Redactor:
         
         tk.Button(file_frame, text="Write", command=self.save_file_overwrite, bg="#ffcccc").pack(side=tk.LEFT, padx=2)
         
-        # File navigation
-        nav_frame = tk.Frame(toolbar1)
-        nav_frame.pack(side=tk.LEFT, padx=2)
+        # Undo button
+        self.undo_button = tk.Button(file_frame, text="↶ Undo", command=self.undo_action, bg="#ffe6e6")
+        self.undo_button.pack(side=tk.LEFT, padx=2)
         
-        tk.Button(nav_frame, text="◀◀", command=self.first_file, width=4).pack(side=tk.LEFT, padx=1)
-        tk.Button(nav_frame, text="◀", command=self.prev_file, width=3).pack(side=tk.LEFT, padx=1)
-        
-        self.file_info_label = tk.Label(nav_frame, text="No files", width=15, bg="white", relief=tk.SUNKEN)
-        self.file_info_label.pack(side=tk.LEFT, padx=2)
-        
-        tk.Button(nav_frame, text="▶", command=self.next_file, width=3).pack(side=tk.LEFT, padx=1)
-        tk.Button(nav_frame, text="▶▶", command=self.last_file, width=4).pack(side=tk.LEFT, padx=1)
-        
-        # Second Toolbar - Modes and Tools
-        toolbar2 = tk.Frame(self.root, height=40)
-        toolbar2.pack(fill=tk.X, side=tk.TOP, padx=5, pady=(2,5))
-        
-        # Tools frame
-        tools_frame = tk.Frame(toolbar2)
+        # Mode buttons on first toolbar
+        tools_frame = tk.Frame(toolbar1)
         tools_frame.pack(side=tk.LEFT, padx=5)
         
-        self.redact_button = tk.Button(tools_frame, text="Redact Mode", command=self.toggle_redact_mode, bg="#e0e0e0", activebackground="#e0e0e0")
+        self.redact_button = tk.Button(tools_frame, text="Redact", command=self.toggle_redact_mode, bg="#e0e0e0", activebackground="#e0e0e0")
         self.redact_button.pack(side=tk.LEFT, padx=2)
         
-        self.text_button = tk.Button(tools_frame, text="Text Mode", command=self.toggle_text_mode, bg="#e0e0e0", activebackground="#e0e0e0")
+        self.text_button = tk.Button(tools_frame, text="Text", command=self.toggle_text_mode, bg="#e0e0e0", activebackground="#e0e0e0")
         self.text_button.pack(side=tk.LEFT, padx=2)
         
-        self.signature_button = tk.Button(tools_frame, text="Signature Mode", command=self.toggle_signature_mode, bg="#e0e0e0", activebackground="#e0e0e0")
+        self.signature_button = tk.Button(tools_frame, text="Signature", command=self.toggle_signature_mode, bg="#e0e0e0", activebackground="#e0e0e0")
         self.signature_button.pack(side=tk.LEFT, padx=2)
         
-        self.ocr_button = tk.Button(tools_frame, text="OCR Mode", command=self.toggle_ocr_mode, bg="#e0e0e0", activebackground="#e0e0e0")
+        self.ocr_button = tk.Button(tools_frame, text="OCR", command=self.toggle_ocr_mode, bg="#e0e0e0", activebackground="#e0e0e0")
         self.ocr_button.pack(side=tk.LEFT, padx=2)
         
-        self.highlight_button = tk.Button(tools_frame, text="Highlight Mode", command=self.toggle_highlight_mode, bg="#e0e0e0", activebackground="#e0e0e0")
+        self.highlight_button = tk.Button(tools_frame, text="Highlight", command=self.toggle_highlight_mode, bg="#e0e0e0", activebackground="#e0e0e0")
         self.highlight_button.pack(side=tk.LEFT, padx=2)
+        
+        # Second Toolbar - Colors, Text Size, Signature Controls, Undo
+        toolbar2 = tk.Frame(self.root, height=40)
+        toolbar2.pack(fill=tk.X, side=tk.TOP, padx=5, pady=(2,5))
         
         # Color selection
         color_frame = tk.Frame(toolbar2)
@@ -509,18 +504,26 @@ class Redactor:
         signature_size_spinbox.bind('<FocusOut>', lambda e: self.update_signature_size())
         signature_size_spinbox.bind('<Return>', lambda e: self.update_signature_size())
         
-        # Separator
-        tk.Frame(toolbar2, width=2, bg="gray").pack(side=tk.LEFT, fill=tk.Y, padx=5)
+        # Third Toolbar - Navigation Controls
+        toolbar3 = tk.Frame(self.root, height=40)
+        toolbar3.pack(fill=tk.X, side=tk.TOP, padx=5, pady=(2,5))
         
-        # Undo controls
-        undo_frame = tk.Frame(toolbar2)
-        undo_frame.pack(side=tk.LEFT, padx=5)
+        # File navigation
+        nav_frame = tk.Frame(toolbar3)
+        nav_frame.pack(side=tk.LEFT, padx=5)
         
-        self.undo_button = tk.Button(undo_frame, text="↶ Undo", command=self.undo_action, bg="#ffe6e6")
-        self.undo_button.pack(side=tk.LEFT, padx=2)
+        tk.Button(nav_frame, text="◀◀", command=self.first_file, width=4).pack(side=tk.LEFT, padx=1)
+        tk.Button(nav_frame, text="◀", command=self.prev_file, width=3).pack(side=tk.LEFT, padx=1)
         
-        # PDF navigation (initially hidden)
-        self.pdf_frame = tk.Frame(toolbar1)
+        self.file_info_label = tk.Label(nav_frame, text="No files", width=10, bg="white", relief=tk.SUNKEN)
+        self.file_info_label.pack(side=tk.LEFT, padx=2)
+        
+        tk.Button(nav_frame, text="▶", command=self.next_file, width=3).pack(side=tk.LEFT, padx=1)
+        tk.Button(nav_frame, text="▶▶", command=self.last_file, width=4).pack(side=tk.LEFT, padx=1)
+        
+        # PDF navigation
+        self.pdf_frame = tk.Frame(toolbar3)
+        self.pdf_frame.pack(side=tk.LEFT, padx=5)
         
         tk.Label(self.pdf_frame, text="Page:").pack(side=tk.LEFT)
         self.page_var = tk.StringVar(value="1")
@@ -534,15 +537,14 @@ class Redactor:
         tk.Button(self.pdf_frame, text="◀", command=self.prev_page, width=3).pack(side=tk.LEFT, padx=1)
         tk.Button(self.pdf_frame, text="▶", command=self.next_page, width=3).pack(side=tk.LEFT, padx=1)
         
-        # Zoom controls (on toolbar1, after nav controls)
-        zoom_frame = tk.Frame(toolbar1)
+        # Zoom controls (on toolbar3, after nav controls)
+        zoom_frame = tk.Frame(toolbar3)
         zoom_frame.pack(side=tk.LEFT, padx=5)
         
         tk.Button(zoom_frame, text="+", command=self.zoom_in, width=3).pack(side=tk.LEFT, padx=1)
         tk.Button(zoom_frame, text="−", command=self.zoom_out, width=3).pack(side=tk.LEFT, padx=1)
         tk.Button(zoom_frame, text="Fit", command=self.fit_to_window, width=6).pack(side=tk.LEFT, padx=1)
         tk.Button(zoom_frame, text="Reset", command=self.reset_zoom, width=6).pack(side=tk.LEFT, padx=1)
-        tk.Button(zoom_frame, text="100%", command=self.reset_zoom_100, width=6).pack(side=tk.LEFT, padx=1)
         
         # Main working area with paned window
         main_paned = tk.PanedWindow(self.root, orient=tk.HORIZONTAL, sashwidth=5, sashrelief=tk.RAISED)
